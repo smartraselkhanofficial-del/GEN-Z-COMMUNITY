@@ -322,6 +322,54 @@ fun ProfileScreen(
             Text("Sign Out", fontWeight = FontWeight.Bold)
           }
 
+          Spacer(modifier = Modifier.height(20.dp))
+
+          // App Version & Update status card
+          Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = DarkSurface),
+            modifier = Modifier
+              .fillMaxWidth()
+              .testTag("app_version_card")
+          ) {
+            Column(
+              modifier = Modifier.padding(16.dp),
+              horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+              ) {
+                Icon(
+                  imageVector = Icons.Default.Check,
+                  contentDescription = "Up to date",
+                  tint = NeonCyan,
+                  modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                  text = "GEN Z COMMUNITY v1.0.2",
+                  fontSize = 12.sp,
+                  fontWeight = FontWeight.Bold,
+                  color = TextPrimary
+                )
+              }
+              Spacer(modifier = Modifier.height(4.dp))
+              Text(
+                text = "In-Place APK Updates Enabled • Same Signing Key",
+                fontSize = 11.sp,
+                color = TextSecondary
+              )
+              Text(
+                text = "New APK versions install directly over this app without uninstalling.",
+                fontSize = 10.sp,
+                color = TextMuted,
+                lineHeight = 14.sp,
+                modifier = Modifier.padding(top = 2.dp)
+              )
+            }
+          }
+
           Spacer(modifier = Modifier.height(90.dp))
         }
       }

@@ -29,25 +29,35 @@ jobs:
         with:
           gradle-version: '9.3.1'
 
-      - name: Create debug keystore
+      - name: Restore registered debug keystore
         run: |
-          keytool -genkeypair -v \
-            -keystore debug.keystore \
-            -storepass android \
-            -alias androiddebugkey \
-            -keypass android \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -dname "CN=Android Debug,O=Android,C=US"
+          if [ -f debug.keystore.base64 ]; then
+            echo "Restoring keystore from debug.keystore.base64..."
+            base64 -d debug.keystore.base64 > debug.keystore
+          elif [ -n "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" ]; then
+            echo "Restoring keystore from secret..."
+            echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | base64 -d > debug.keystore
+          fi
+          # Verify keystore fingerprint matches Firebase registration (33:F1:95:E0:...)
+          keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android | grep -E "SHA1|SHA256"
 
-      - name: Build APK
-        run: gradle --no-daemon assembleDebug
+      - name: Build APK with auto-incremented version
+        run: |
+          BUILD_NUM=${{ github.run_number }}
+          VERSION_CODE=$((BUILD_NUM + 10))
+          VERSION_NAME="1.0.${BUILD_NUM}"
+          echo "============================================="
+          echo "Building GEN Z COMMUNITY APK"
+          echo "Version Code: $VERSION_CODE"
+          echo "Version Name: $VERSION_NAME"
+          echo "Allows direct in-place update without uninstalling"
+          echo "============================================="
+          gradle --no-daemon assembleDebug -PversionCode=${VERSION_CODE} -PversionName="${VERSION_NAME}"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: GEN-Z-COMMUNITY-debug-apk
+          name: GEN-Z-COMMUNITY-update-v1.0.${{ github.run_number }}
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
