@@ -116,6 +116,15 @@ fun GoogleSignInButton(
   }
 }
 
+private fun Context.findActivity(): Activity {
+  var ctx = this
+  while (ctx is android.content.ContextWrapper) {
+    if (ctx is Activity) return ctx
+    ctx = ctx.baseContext
+  }
+  return this as Activity
+}
+
 fun onGoogleSignInClicked(
   context: Context,
   credentialManager: CredentialManager,
@@ -136,7 +145,8 @@ fun onGoogleSignInClicked(
 
   scope.launch {
     try {
-      val result = credentialManager.getCredential(context as Activity, request)
+      val activity = context.findActivity()
+      val result = credentialManager.getCredential(activity, request)
       val credential = result.credential
       if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
         val googleIdToken = GoogleIdTokenCredential.createFrom(credential.data).idToken
@@ -144,14 +154,19 @@ fun onGoogleSignInClicked(
         Firebase.auth.signInWithCredential(authCredential).await()
         onAuthSuccess()
       } else {
-        onAuthError("Unexpected credential type")
+        onAuthError("Unexpected credential type received")
       }
     } catch (e: GetCredentialCancellationException) {
       Log.w("Auth", "Google Sign-In flow cancelled or dismissed: ${e.message}", e)
       onAuthCancelled()
+      onAuthError("Sign-in dialog was closed or cancelled. Please select a Google account to continue.")
     } catch (e: Exception) {
       Log.e("Auth", "Google Sign-In failed", e)
-      onAuthError(e.localizedMessage ?: "Sign in failed")
+      val msg = when {
+        e.message?.contains("16:") == true -> "Please ensure a Google account is added to the device/emulator settings."
+        else -> e.localizedMessage ?: "Sign in failed. Please try again."
+      }
+      onAuthError(msg)
     }
   }
 }

@@ -133,6 +133,16 @@ fun AuthScreen(
         onAuthError = { errorMessage = it }
       )
 
+      Spacer(modifier = Modifier.height(14.dp))
+
+      Text(
+        text = "Quick & secure sign-in with any Google / Gmail account.\nYour profile name and handle can be customized anytime.",
+        fontSize = 12.sp,
+        color = TextMuted,
+        textAlign = TextAlign.Center,
+        lineHeight = 16.sp
+      )
+
       if (errorMessage != null) {
         Spacer(modifier = Modifier.height(12.dp))
         Text(
