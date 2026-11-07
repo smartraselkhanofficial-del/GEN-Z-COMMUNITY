@@ -1,0 +1,6 @@
+{
+  "name": "GEN Z COMMUNITY",
+  "description": "Next-generation social community app featuring live audio rooms, social moments, real-time messaging, feeds, and modern community connections.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
