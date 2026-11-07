@@ -1,4 +1,3 @@
-
 name: GEN Z COMMUNITY Android APK
 
 on:
@@ -31,24 +30,14 @@ jobs:
 
       - name: Restore registered debug keystore
         run: |
-          if [ -f debug.keystore.base64 ]; then
-            echo "Restoring from repository debug.keystore.base64..."
-            cat debug.keystore.base64 | tr -d '\r\n ' | base64 -d > debug.keystore || true
+          if [ -f restore_keystore.sh ]; then
+            bash restore_keystore.sh
+          elif [ -f debug.keystore.base64 ]; then
+            cat debug.keystore.base64 | tr -d '\r\n ' | base64 -d > debug.keystore
+          else
+            echo "Restoring embedded keystore..."
+            echo "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" | base64 -d > debug.keystore
           fi
-
-          if [ ! -s debug.keystore ] && [ -n "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" ]; then
-            echo "Restoring from GitHub secret..."
-            echo "${{ secrets.DEBUG_KEYSTORE_BASE64 }}" | tr -d '\r\n ' | base64 -d > debug.keystore || true
-          fi
-
-          if [ ! -s debug.keystore ]; then
-            echo "Restoring directly from embedded verified keystore..."
-            cat << 'KEYSTORE_EOF' | tr -d '\r\n ' | base64 -d > debug.keystore
-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
-KEYSTORE_EOF
-          fi
-
-          # Verify keystore fingerprint matches Firebase registration (33:F1:95:E0:...)
           keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android | grep -E "SHA1|SHA256"
 
       - name: Build APK with auto-incremented version
@@ -56,12 +45,6 @@ KEYSTORE_EOF
           BUILD_NUM=${{ github.run_number }}
           VERSION_CODE=$((BUILD_NUM + 10))
           VERSION_NAME="1.0.${BUILD_NUM}"
-          echo "============================================="
-          echo "Building GEN Z COMMUNITY APK"
-          echo "Version Code: $VERSION_CODE"
-          echo "Version Name: $VERSION_NAME"
-          echo "Allows direct in-place update without uninstalling"
-          echo "============================================="
           gradle --no-daemon assembleDebug -PversionCode=${VERSION_CODE} -PversionName="${VERSION_NAME}"
 
       - name: Upload APK
